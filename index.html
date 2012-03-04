@@ -15,7 +15,7 @@
 
 		<!-- Other geometries -->
 		<script type="text/wkt" id="bounds_netherlands">
-			POLYGON((141000 629000, 100000 600000, 80000  500000, -7000  392000, -7000  336000, 101000 336000, 161000 289000, 219000 289000, 300000 451000, 300000 614000, 259000 629000, 141000 629000))
+			POLYGON((141000000 629000000, 100000000 600000000, 80000000  500000000, -7000000  392000000, -7000000  336000000, 101000000 336000000, 161000000 289000000, 219000000 289000000, 300000000 451000000, 300000000 614000000, 259000000 629000000, 141000000 629000000))
 		</script>
 	</head>
 
@@ -27,21 +27,19 @@
 			var olMap;
 			var olLayer;
 			var olZoom = 5;
-			var olCenter = new OpenLayers.LonLat(5, 53);
+			var olCenter = new OpenLayers.LonLat(153000000, 463000000); // XXX: should be center of NEN file
 
 			var nenFeature = null;
+			var nenLayer;
 
 			// OpenLayers thingies
 			function setupMap() {
 				olMap = new OpenLayers.Map('map', {
-					maxExtent: new OpenLayers.Bounds(-7000, 289000, 300000, 629000),
-					maxResolution: 500 / 256, // 500m per 256px
-					units: 'm',
+					maxExtent: new OpenLayers.Bounds(-7000000, 289000000, 300000000, 629000000),
+					maxResolution: 500000 / 256, // 500m per 256px
+					units: 'mm',
 					projection: "EPSG:28992"
 				});
-				//olLayer = new OpenLayers.Layer.WMS("OpenLayers WMS", "http://vmap0.tiles.osgeo.org/wms/vmap0", { layers: 'basic' } );
-				//olMap.addLayer(olLayer);
-				//olMap.setCenter(olCenter, olZoom);
 			}
 
 			// NEN/GBKN thingies
@@ -61,7 +59,16 @@
 				function onNenEnd() {
 					console.log('onEnd');
 
-					// add layer + feature
+					// add layer
+					nenLayer = new OpenLayers.Layer.Vector();
+					olMap.addLayer(nenLayer);
+
+					// add feature
+					var geoJsonFormat = new OpenLayers.Format.GeoJSON();
+					var olFeature = geoJsonFormat.read(nenFeature, 'Feature');
+					nenLayer.addFeatures(olFeature);
+
+					//olMap.setCenter(olCenter);
 				}
 
 				function onAjaxSuccess(data, textStatus, jqXHR) {
