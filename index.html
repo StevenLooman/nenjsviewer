@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<title>Tech demo: GBKN data in browser, fully client side</title>
+
+		<!-- jQuery -->
+		<script type="text/javascript" src="http://code.jquery.com/jquery-1.7.1.min.js"></script>
+
+		<!-- OpenLayers -->
+		<script type="text/javascript" src="http://openlayers.org/api/2.11/OpenLayers.js"></script>
+
+		<!-- NEN and geometry related -->
+		<script type="text/javascript" src="js/straightcurve-0.0.2.js"></script>
+		<script type="text/javascript" src="js/nen1878reader-0.6.1.js"></script>
+
+		<!-- Other geometries -->
+		<script type="text/wkt" id="bounds_netherlands">
+			POLYGON((141000 629000, 100000 600000, 80000  500000, -7000  392000, -7000  336000, 101000 336000, 161000 289000, 219000 289000, 300000 451000, 300000 614000, 259000 629000, 141000 629000))
+		</script>
+	</head>
+
+	<body>
+		<div id="map" style="width: 400px; height: 300px; border: 1px solid;">
+		</div>
+
+		<script type="text/javascript">
+			var olMap;
+			var olLayer;
+			var olZoom = 5;
+			var olCenter = new OpenLayers.LonLat(5, 53);
+
+			var nenFeature = null;
+
+			// OpenLayers thingies
+			function setupMap() {
+				olMap = new OpenLayers.Map('map', {
+					maxExtent: new OpenLayers.Bounds(-7000, 289000, 300000, 629000),
+					maxResolution: 500 / 256, // 500m per 256px
+					units: 'm',
+					projection: "EPSG:28992"
+				});
+				//olLayer = new OpenLayers.Layer.WMS("OpenLayers WMS", "http://vmap0.tiles.osgeo.org/wms/vmap0", { layers: 'basic' } );
+				//olMap.addLayer(olLayer);
+				//olMap.setCenter(olCenter, olZoom);
+			}
+
+			// NEN/GBKN thingies
+			function readNenFeatures() {
+				function onNenRecord(record) {
+					if (record.recordType != 3) {
+						return;
+					}
+
+					console.log('onRecord');
+
+					if (!nenFeature) {
+						nenFeature = nen1878reader.GeoJson.toFeature(record);
+					}
+				}
+
+				function onNenEnd() {
+					console.log('onEnd');
+
+					// add layer + feature
+				}
+
+				function onAjaxSuccess(data, textStatus, jqXHR) {
+					console.log('ajax success');
+
+					var parser = new nen1878reader.Nen1878Parser();
+					var reader = new nen1878reader.Nen1878StringReader(parser, data);
+
+					parser.on('record', onNenRecord);
+					reader.on('end', onNenEnd);
+
+					reader.start();
+				}
+
+				function onAjaxError(jqXHR, textStatus, errorThrown) {
+					console.log('error');
+					console.log(textStatus);
+				}
+
+				$.ajax({
+					url: 'data/WEESP_N__7001.NEN',
+					dataType: 'text',
+					success: onAjaxSuccess,
+					error: onAjaxError
+				});
+			}
+
+			$(document).ready(function() {
+				setupMap();
+				readNenFeatures();
+			});
+		</script>
+	</body>
+</html>
