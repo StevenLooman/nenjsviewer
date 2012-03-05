@@ -20,13 +20,13 @@
 	</head>
 
 	<body>
-		<div id="map" style="width: 400px; height: 300px; border: 1px solid;">
+		<div id="map" style="width: 600px; height: 450px; border: 1px solid;">
 		</div>
 
 		<script type="text/javascript">
 			var olMap;
 			var olLayer;
-			var olZoom = 5;
+			var olZoom = 3;
 			var olGeoJsonFormat = new OpenLayers.Format.GeoJSON();
 			var olNenLayer;
 
@@ -34,7 +34,7 @@
 			function setupMap() {
 				olMap = new OpenLayers.Map('map', {
 					maxExtent: new OpenLayers.Bounds(-7000000, 289000000, 300000000, 629000000),
-					maxResolution: 250000 / 256, // 250m per 256px
+					maxResolution: 500000 / 256, // 500m per 256px
 					units: 'mm',
 					projection: "EPSG:28992"
 				});
@@ -57,7 +57,6 @@
 				'B07': { strokeColor: '#ff0000' },
 				'B11': { strokeColor: '#ff0000' },
 				'B14': { strokeColor: '#ff0000' },
-
 				'B17': { strokeColor: '#ff0000', strokeDashstyle: 'point' },
 				'B20': { strokeColor: '#ff0000', strokeDashstyle: 'point' },
 
@@ -69,6 +68,9 @@
 
 				'Q07': { strokeColor: '#0000ff' },
 				'Q06': { strokeColor: '#0000ff' },
+				'W00': { strokeColor: '#0000ff' },
+				'T09': { strokeColor: '#0000ff' },
+				'T07': { strokeColor: '#0000ff' },
 
 				'T00': { strokeColor: '#000000' },
 				'T01': { strokeColor: '#000000' },
@@ -84,6 +86,11 @@
 
 					if (record.recordType == 3) {
 						var olFeature = olGeoJsonFormat.read(nenFeature, 'Feature');
+
+						if (record.geometryType == 13) {
+							console.log('arc');
+							return;
+						}
 
 						// color
 						if (nenFeature.properties.lkiCode && nenFeature.properties.lkiCode in nenStyles) {
