@@ -13,9 +13,47 @@
 		<script type="text/javascript" src="js/straightcurve-0.0.2.js"></script>
 		<script type="text/javascript" src="js/nen1878reader-0.6.1.js"></script>
 
-		<!-- Other geometries -->
-		<script type="text/wkt" id="bounds_netherlands">
-			POLYGON((141000000 629000000, 100000000 600000000, 80000000  500000000, -7000000  392000000, -7000000  336000000, 101000000 336000000, 161000000 289000000, 219000000 289000000, 300000000 451000000, 300000000 614000000, 259000000 629000000, 141000000 629000000))
+		<!-- Style map -->
+		<!-- styles taken from the GBKN handboek 2.1 -->
+		<script id="gbkn_style" type="text/json">
+			{
+				"B01": { "strokeColor": "#ff0000" },
+				"B02": { "strokeColor": "#ff0000" },
+				"B07": { "strokeColor": "#ff0000" },
+				"B11": { "strokeColor": "#ff0000" },
+				"B14": { "strokeColor": "#ff0000" },
+				"B17": { "strokeColor": "#ff0000"," strokeDashstyle": "point" },
+				"B20": { "strokeColor": "#ff0000", "strokeDashstyle": "point" },
+
+				"B03": { "strokeColor": "#ff0000" },
+				"B04": { "strokeColor": "#ff0000" },
+
+				"V00": { "strokeColor": "#000000" },
+				"V06": { "strokeColor": "#000000" },
+
+				"Q07": { "strokeColor": "#0000ff" },
+				"Q06": { "strokeColor": "#0000ff" },
+				"W00": { "strokeColor": "#0000ff" },
+				"T09": { "strokeColor": "#0000ff" },
+				"T07": { "strokeColor": "#0000ff" },
+
+				"T00": { "strokeColor": "#000000" },
+				"T01": { "strokeColor": "#000000" },
+				"T13": { "strokeColor": "#000000" },
+				"T22": { "strokeColor": "#000000" },
+				"Q01": { "strokeColor": "#000000" },
+				"Q10": { "strokeColor": "#000000" },
+				"L01": { "strokeColor": "#000000" },
+
+				"Z06": { "fontColor": "#000000", "fontFamily": "Arial" },
+				"Z02": { "fontColor": "#000000", "fontFamily": "Arial" },
+
+				"Z07": { "fontColor": "#0000ff", "fontFamily": "Arial" },
+
+				"Z09": { "fontColor": "#000000", "fontFamily": "Arial" },
+				"Z05": { "fontColor": "#000000", "fontFamily": "Arial" },
+				"Z19": { "fontColor": "#000000", "fontFamily": "Arial" }
+			}
 		</script>
 	</head>
 
@@ -50,46 +88,11 @@
 			}
 
 			// NEN/GBKN thingies
-			// styles taken from the GBKN handboek 2.1
-			var nenStyles = {
-				'B01': { strokeColor: '#ff0000' },
-				'B02': { strokeColor: '#ff0000' },
-				'B07': { strokeColor: '#ff0000' },
-				'B11': { strokeColor: '#ff0000' },
-				'B14': { strokeColor: '#ff0000' },
-				'B17': { strokeColor: '#ff0000', strokeDashstyle: 'point' },
-				'B20': { strokeColor: '#ff0000', strokeDashstyle: 'point' },
-
-				'B03': { strokeColor: '#ff0000' },
-				'B04': { strokeColor: '#ff0000' },
-
-				'V00': { strokeColor: '#000000' },
-				'V06': { strokeColor: '#000000' },
-
-				'Q07': { strokeColor: '#0000ff' },
-				'Q06': { strokeColor: '#0000ff' },
-				'W00': { strokeColor: '#0000ff' },
-				'T09': { strokeColor: '#0000ff' },
-				'T07': { strokeColor: '#0000ff' },
-
-				'T00': { strokeColor: '#000000' },
-				'T01': { strokeColor: '#000000' },
-				'T13': { strokeColor: '#000000' },
-				'T22': { strokeColor: '#000000' },
-				'Q01': { strokeColor: '#000000' },
-				'Q10': { strokeColor: '#000000' },
-				'L01': { strokeColor: '#000000' },
-
-				'Z06': { fontColor: '#000000', fontFamily: 'Arial' },
-				'Z02': { fontColor: '#000000', fontFamily: 'Arial' },
-
-				'Z07': { fontColor: '#0000ff', fontFamily: 'Arial' },
-
-				'Z09': { fontColor: '#000000', fontFamily: 'Arial' },
-				'Z05': { fontColor: '#000000', fontFamily: 'Arial' },
-				'Z19': { fontColor: '#000000', fontFamily: 'Arial' },
-			};
+			var nenStyles = JSON.parse($('#gbkn_style').text());
 			function readNenFeatures() {
+				// XXX: TODO: render labels dependent on scale
+				// to do this, simply add multiple layers (one for house numbers (only visible on lower scale), one for street labels (visible from higher scale), one for the rest (always visible), etc
+
 				function onNenRecord(record) {
 					var nenFeature = nen1878reader.GeoJson.toFeature(record);
 
