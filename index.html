@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
 	<head>
-		<title>Tech demo: GBKN data in browser, fully client side</title>
+		<title>Demo: GBKN data in browser, fully client side</title>
 
 		<!-- jQuery -->
 		<script type="text/javascript" src="http://code.jquery.com/jquery-1.7.1.min.js"></script>
@@ -36,7 +36,7 @@
 			function setupMap() {
 				olMap = new OpenLayers.Map('map', {
 					maxExtent: new OpenLayers.Bounds(-7000000, 289000000, 300000000, 629000000),
-					maxResolution: 500000 / 256, // 500m per 256px
+					maxResolution: 250000 / 256, // 250m per 256px
 					units: 'mm',
 					projection: "EPSG:28992"
 				});
@@ -45,35 +45,32 @@
 			// NEN/GBKN thingies
 			function readNenFeatures() {
 				function onNenRecord(record) {
-					if (record.recordType != 3) {
-						return;
-					}
-
-					console.log('onRecord');
-
-					if (!nenFeature) {
+					if (!nenFeature && record.recordType == 3) {
 						nenFeature = nen1878reader.GeoJson.toFeature(record);
+						console.log('nen feature', nenFeature);
 					}
 				}
 
 				function onNenEnd() {
-					console.log('onEnd');
-
 					// add layer
 					nenLayer = new OpenLayers.Layer.Vector();
 					olMap.addLayer(nenLayer);
+					olMap.setBaseLayer(nenLayer);
+
+					nenFeature.bbox = [ 131002679, 480022688, 131007746, 480027748 ]; // XXX: TODO: add bounds?
 
 					// add feature
 					var geoJsonFormat = new OpenLayers.Format.GeoJSON();
 					var olFeature = geoJsonFormat.read(nenFeature, 'Feature');
+					console.log('feature', olFeature);
 					nenLayer.addFeatures(olFeature);
 
-					//olMap.setCenter(olCenter);
+					// center
+					var featureCenter = new OpenLayers.LonLat(131006460, 480027748);
+					olMap.setCenter(featureCenter, olZoom);
 				}
 
 				function onAjaxSuccess(data, textStatus, jqXHR) {
-					console.log('ajax success');
-
 					var parser = new nen1878reader.Nen1878Parser();
 					var reader = new nen1878reader.Nen1878StringReader(parser, data);
 
