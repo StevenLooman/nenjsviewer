@@ -50,6 +50,7 @@
 			}
 
 			// NEN/GBKN thingies
+			// styles taken from the GBKN handboek 2.1
 			var nenStyles = {
 				'B01': { strokeColor: '#ff0000' },
 				'B02': { strokeColor: '#ff0000' },
@@ -78,7 +79,6 @@
 				'L01': { strokeColor: '#000000' },
 			};
 			function readNenFeatures() {
-				var a = false;
 				function onNenRecord(record) {
 					var nenFeature = nen1878reader.GeoJson.toFeature(record);
 
@@ -92,13 +92,6 @@
 						}
 
 						olNenLayer.addFeatures(olFeature);
-					}
-
-					if (record.recordType == 3 && !a) {
-						a = true;
-						console.log('nen feature', nenFeature);
-						var olFeature = olGeoJsonFormat.read(nenFeature, 'Feature');
-						console.log('ol feature', olFeature);
 					}
 				}
 
