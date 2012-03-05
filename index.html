@@ -27,7 +27,7 @@
 			var olMap;
 			var olLayer;
 			var olZoom = 5;
-			var olCenter = new OpenLayers.LonLat(153000000, 463000000); // XXX: should be center of NEN file
+			var olGeoJsonFormat = new OpenLayers.Format.GeoJSON();
 
 			var nenFeature = null;
 			var nenLayer;
@@ -40,6 +40,15 @@
 					units: 'mm',
 					projection: "EPSG:28992"
 				});
+
+				// add NEN-layer
+				nenLayer = new OpenLayers.Layer.Vector();
+				olMap.addLayer(nenLayer);
+				olMap.setBaseLayer(nenLayer);
+
+				// center
+				var featureCenter = new OpenLayers.LonLat(131006460, 480027748);
+				olMap.setCenter(featureCenter, olZoom);
 			}
 
 			// NEN/GBKN thingies
@@ -52,22 +61,10 @@
 				}
 
 				function onNenEnd() {
-					// add layer
-					nenLayer = new OpenLayers.Layer.Vector();
-					olMap.addLayer(nenLayer);
-					olMap.setBaseLayer(nenLayer);
-
-					nenFeature.bbox = [ 131002679, 480022688, 131007746, 480027748 ]; // XXX: TODO: add bounds?
-
 					// add feature
-					var geoJsonFormat = new OpenLayers.Format.GeoJSON();
-					var olFeature = geoJsonFormat.read(nenFeature, 'Feature');
+					var olFeature = olGeoJsonFormat.read(nenFeature, 'Feature');
 					console.log('feature', olFeature);
 					nenLayer.addFeatures(olFeature);
-
-					// center
-					var featureCenter = new OpenLayers.LonLat(131006460, 480027748);
-					olMap.setCenter(featureCenter, olZoom);
 				}
 
 				function onAjaxSuccess(data, textStatus, jqXHR) {
