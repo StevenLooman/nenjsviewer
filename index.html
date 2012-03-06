@@ -13,8 +13,7 @@
 		<script type="text/javascript" src="js/straightcurve-0.0.2.js"></script>
 		<script type="text/javascript" src="js/nen1878reader-0.6.1.js"></script>
 
-		<!-- Style map -->
-		<!-- styles taken from the GBKN handboek 2.1 -->
+		<!-- Style map, styles taken from the GBKN handboek 2.1 -->
 		<script id="gbkn_style" type="text/json">
 			{
 				"B01": { "strokeColor": "#ff0000" },
@@ -56,6 +55,7 @@
 			}
 		</script>
 
+		<!-- Visibility rules for Street names and House numbers -->
 		<script id="visibility_rules" type="text/json">
 			{
 				"Z06": [ { "maxScaleDenominator": 2000 } ],
@@ -71,10 +71,8 @@
 		<script type="text/javascript">
 			var olMap;
 			var olLayers = {};
+			var olCenter = new OpenLayers.LonLat(131006460, 480027748);
 			var olZoom = 3;
-			var olGeoJsonFormat = new OpenLayers.Format.GeoJSON();
-			var nenStyles = JSON.parse($('#gbkn_style').text());
-			var nenVisibilities = JSON.parse($('#visibility_rules').text());
 
 			// OpenLayers thingies
 			function setupMap() {
@@ -91,10 +89,11 @@
 				olMap.setBaseLayer(baseLayer);
 
 				// center
-				var featureCenter = new OpenLayers.LonLat(131006460, 480027748);
-				olMap.setCenter(featureCenter, olZoom);
+				olMap.setCenter(olCenter, olZoom);
 			}
 
+			var nenStyles = JSON.parse($('#gbkn_style').text());
+			var nenVisibilities = JSON.parse($('#visibility_rules').text());
 			function getLayer(lkiCode) {
 				if (lkiCode && !(lkiCode in olLayers)) {
 					// visibility rules
@@ -128,8 +127,7 @@
 
 			// NEN/GBKN thingies
 			function readNenFeatures() {
-				// XXX: TODO: render labels dependent on scale
-				// to do this, simply add multiple layers (one for house numbers (only visible on lower scale), one for street labels (visible from higher scale), one for the rest (always visible), etc
+				var olGeoJsonFormat = new OpenLayers.Format.GeoJSON();
 
 				function arcToLineString(arc) {
 					// convert an arc to a line string
