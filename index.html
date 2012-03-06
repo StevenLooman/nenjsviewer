@@ -63,10 +63,10 @@
 
 		<script type="text/javascript">
 			var olMap;
-			var olLayer;
+			var olLayers = {};
 			var olZoom = 3;
 			var olGeoJsonFormat = new OpenLayers.Format.GeoJSON();
-			var olNenLayer;
+			var olNenLayer
 
 			// OpenLayers thingies
 			function setupMap() {
@@ -77,7 +77,7 @@
 					projection: "EPSG:28992"
 				});
 
-				// add NEN-layer
+				// add base layer
 				olNenLayer = new OpenLayers.Layer.Vector();
 				olMap.addLayer(olNenLayer);
 				olMap.setBaseLayer(olNenLayer);
@@ -93,28 +93,33 @@
 				// XXX: TODO: render labels dependent on scale
 				// to do this, simply add multiple layers (one for house numbers (only visible on lower scale), one for street labels (visible from higher scale), one for the rest (always visible), etc
 
+				function arcToLineString(arc) {
+					// convert an arc to a line string
+					var points = [
+						new straightcurve.Vertex2(arc.coordinates[0].x, arc.coordinates[0].y),
+						new straightcurve.Vertex2(arc.coordinates[1].x, arc.coordinates[1].y),
+						new straightcurve.Vertex2(arc.coordinates[2].x, arc.coordinates[2].y),
+					];
+					var arc = new straightcurve.Arc2(points[0], points[1], points[2]);
+					var lines = arc.segmentize(25);
+					var geometry = {
+						type: 'LineString',
+						coordinates: []
+					}
+					geometry.coordinates.push([ lines[0].p0.x, lines[0].p0.y ]);
+					for (var i = 0; i < lines.length; ++i) {
+						var line = lines[i];
+						geometry.coordinates.push([ line.p1.x, line.p1.y ]);
+					}
+					return geometry;
+				}
+
 				function onNenRecord(record) {
 					var nenFeature = nen1878reader.GeoJson.toFeature(record);
 
 					if (record.recordType == 3) {
 						if (record.geometryType == 13) {
-							// convert an arc to a line string
-							var points = [
-								new straightcurve.Vertex2(record.geometry.coordinates[0].x, record.geometry.coordinates[0].y),
-								new straightcurve.Vertex2(record.geometry.coordinates[1].x, record.geometry.coordinates[1].y),
-								new straightcurve.Vertex2(record.geometry.coordinates[2].x, record.geometry.coordinates[2].y),
-							];
-							var arc = new straightcurve.Arc2(points[0], points[1], points[2]);
-							var lines = arc.segmentize(25);
-							nenFeature.geometry = {
-								type: 'LineString',
-								coordinates: []
-							}
-							nenFeature.geometry.coordinates.push([ lines[0].p0.x, lines[0].p0.y ]);
-							for (var i = 0; i < lines.length; ++i) {
-								var line = lines[i];
-								nenFeature.geometry.coordinates.push([ line.p1.x, line.p1.y ]);
-							}
+							nenFeature.geometry = arcToLineString(record.geometry);
 						}
 
 						var olFeature = olGeoJsonFormat.read(nenFeature, 'Feature');
