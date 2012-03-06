@@ -55,6 +55,13 @@
 				"Z19": { "fontColor": "#000000", "fontFamily": "Arial", "label": "${text}" }
 			}
 		</script>
+
+		<script id="visibility_rules" type="text/json">
+			{
+				"Z06": [ { "maxScaleDenominator": 2000 } ],
+				"Z02": [ { "maxScaleDenominator": 1000 } ]
+			}
+		</script>
 	</head>
 
 	<body>
@@ -67,6 +74,7 @@
 			var olZoom = 3;
 			var olGeoJsonFormat = new OpenLayers.Format.GeoJSON();
 			var nenStyles = JSON.parse($('#gbkn_style').text());
+			var nenVisibilities = JSON.parse($('#visibility_rules').text());
 
 			// OpenLayers thingies
 			function setupMap() {
@@ -89,9 +97,21 @@
 
 			function getLayer(lkiCode) {
 				if (lkiCode && !(lkiCode in olLayers)) {
+					// visibility rules
+					var rules = [];
+					if (nenVisibilities[lkiCode]) {
+						for (var i = 0; i < nenVisibilities[lkiCode].length; ++i) {
+							var definition = nenVisibilities[lkiCode][i];
+							var rule = new OpenLayers.Rule(definition);
+							rules.push(rule);
+						}
+					}
+
 					// style for layer
 					var nenStyle = nenStyles[lkiCode];
-					var style = new OpenLayers.Style(nenStyle);
+					var style = new OpenLayers.Style(nenStyle, {
+						rules: rules
+					});
 
 					// create layer
 					var layer = new OpenLayers.Layer.Vector(lkiCode, {
