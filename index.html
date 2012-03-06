@@ -45,14 +45,14 @@
 				"Q10": { "strokeColor": "#000000" },
 				"L01": { "strokeColor": "#000000" },
 
-				"Z06": { "fontColor": "#000000", "fontFamily": "Arial" },
-				"Z02": { "fontColor": "#000000", "fontFamily": "Arial" },
+				"Z06": { "fontColor": "#000000", "fontFamily": "Arial", "label": "${text}" },
+				"Z02": { "fontColor": "#000000", "fontFamily": "Arial", "label": "${text}" },
 
-				"Z07": { "fontColor": "#0000ff", "fontFamily": "Arial" },
+				"Z07": { "fontColor": "#0000ff", "fontFamily": "Arial", "label": "${text}" },
 
-				"Z09": { "fontColor": "#000000", "fontFamily": "Arial" },
-				"Z05": { "fontColor": "#000000", "fontFamily": "Arial" },
-				"Z19": { "fontColor": "#000000", "fontFamily": "Arial" }
+				"Z09": { "fontColor": "#000000", "fontFamily": "Arial", "label": "${text}" },
+				"Z05": { "fontColor": "#000000", "fontFamily": "Arial", "label": "${text}" },
+				"Z19": { "fontColor": "#000000", "fontFamily": "Arial", "label": "${text}" }
 			}
 		</script>
 	</head>
@@ -66,7 +66,7 @@
 			var olLayers = {};
 			var olZoom = 3;
 			var olGeoJsonFormat = new OpenLayers.Format.GeoJSON();
-			var olNenLayer
+			var nenStyles = JSON.parse($('#gbkn_style').text());
 
 			// OpenLayers thingies
 			function setupMap() {
@@ -78,17 +78,35 @@
 				});
 
 				// add base layer
-				olNenLayer = new OpenLayers.Layer.Vector();
-				olMap.addLayer(olNenLayer);
-				olMap.setBaseLayer(olNenLayer);
+				var baseLayer = getLayer('base');
+				olMap.addLayer(baseLayer);
+				olMap.setBaseLayer(baseLayer);
 
 				// center
 				var featureCenter = new OpenLayers.LonLat(131006460, 480027748);
 				olMap.setCenter(featureCenter, olZoom);
 			}
 
+			function getLayer(lkiCode) {
+				if (lkiCode && !(lkiCode in olLayers)) {
+					// style for layer
+					var nenStyle = nenStyles[lkiCode];
+					var style = new OpenLayers.Style(nenStyle);
+
+					// create layer
+					var layer = new OpenLayers.Layer.Vector(lkiCode, {
+						styleMap: new OpenLayers.StyleMap(style)
+					});
+					olMap.addLayer(layer);
+
+					olLayers[lkiCode] = layer;
+				}
+
+				return olLayers[lkiCode];
+			}
+
+
 			// NEN/GBKN thingies
-			var nenStyles = JSON.parse($('#gbkn_style').text());
 			function readNenFeatures() {
 				// XXX: TODO: render labels dependent on scale
 				// to do this, simply add multiple layers (one for house numbers (only visible on lower scale), one for street labels (visible from higher scale), one for the rest (always visible), etc
@@ -117,31 +135,20 @@
 				function onNenRecord(record) {
 					var nenFeature = nen1878reader.GeoJson.toFeature(record);
 
-					if (record.recordType == 3) {
-						if (record.geometryType == 13) {
-							nenFeature.geometry = arcToLineString(record.geometry);
-						}
-
-						var olFeature = olGeoJsonFormat.read(nenFeature, 'Feature');
-
-						// style
-						var nenStyle = nenStyles[nenFeature.properties.lkiCode] || {};
-						olFeature.style = nenStyle;
-
-						olNenLayer.addFeatures(olFeature);
-					} else if (record.recordType == 5) {
-						var olFeature = olGeoJsonFormat.read(nenFeature, 'Feature');
-
-						// style
-						// can't simply assign here, need to copy or we'll overwrite the text for other labels
-						olFeature.style = jQuery.extend({}, nenStyles[nenFeature.properties.lkiCode] || {}); // copy/clone trickery here
-						olFeature.style.label = record.text;
-
-						olNenLayer.addFeatures(olFeature);
+					// only add records of type 3 or 5
+					if (record.recordType != 3 && record.recordType != 5) {
+						return;
 					}
-				}
 
-				function onNenEnd() {
+					// 
+					if (record.geometryType == 13) {
+						nenFeature.geometry = arcToLineString(record.geometry);
+					}
+
+					var olFeature = olGeoJsonFormat.read(nenFeature, 'Feature');
+					var layer = getLayer(record.lkiCode);
+
+					layer.addFeatures(olFeature);
 				}
 
 				function onAjaxSuccess(data, textStatus, jqXHR) {
@@ -149,7 +156,6 @@
 					var reader = new nen1878reader.Nen1878StringReader(parser, data);
 
 					parser.on('record', onNenRecord);
-					reader.on('end', onNenEnd);
 
 					reader.start();
 				}
