@@ -117,6 +117,9 @@
 					projection: "EPSG:28992"
 				});
 
+				// additional map controls
+				olMap.addControl(new OpenLayers.Control.LayerSwitcher());
+
 				// add base layer
 				var baseLayer = getLayer('base');
 				olMap.addLayer(baseLayer);
