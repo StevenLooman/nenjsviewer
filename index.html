@@ -162,6 +162,38 @@
 				return olLayers[lkiCode];
 			}
 
+			function onReadingFinished() {
+				console.log('onReadingFinished');
+
+				var layers = [];
+				for (var layerName in olLayers) {
+					var layer = getLayer(layerName);
+					layers.push(layer);
+
+					layer.events.on({
+						'featureselected': function(e) {
+							console.log('selected feature', e.feature.attributes);
+						}
+					});
+				}
+				console.log('layers', layers);
+
+				var selectControl = new OpenLayers.Control.SelectFeature(
+					layers,
+					{
+						clickout: true,
+						toggle: false,
+						multiple: false,
+						hover: false,
+						toggleKey: "ctrlKey",
+						multipleKey: "shiftKey"
+					}
+				);
+
+				olMap.addControl(selectControl);
+				selectControl.activate();
+			}
+
 			// NEN/GBKN thingies
 			function readNenFeatures() {
 				var olGeoJsonFormat = new OpenLayers.Format.GeoJSON();
@@ -211,6 +243,7 @@
 					var reader = new nen1878reader.Nen1878StringReader(parser, data);
 
 					parser.on('record', onNenRecord);
+					reader.on('end', onReadingFinished);
 
 					reader.start();
 				}
