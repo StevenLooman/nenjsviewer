@@ -207,7 +207,7 @@
 			function readNenFeatures() {
 				var olGeoJsonFormat = new OpenLayers.Format.GeoJSON();
 
-				function arcToLineString(arc) {
+				function arcToLineString(arc, segmentCount) {
 					// convert an arc to a line string
 					var points = [
 						new straightcurve.Vertex2(arc.coordinates[0].x, arc.coordinates[0].y),
@@ -215,7 +215,7 @@
 						new straightcurve.Vertex2(arc.coordinates[2].x, arc.coordinates[2].y),
 					];
 					var arc = new straightcurve.Arc2(points[0], points[1], points[2]);
-					var lines = arc.segmentize(25);
+					var lines = arc.segmentize(segmentCount);
 					var geometry = {
 						type: 'LineString',
 						coordinates: []
@@ -238,7 +238,7 @@
 
 					// 
 					if (record.geometryType == 13) {
-						nenFeature.geometry = arcToLineString(record.geometry);
+						nenFeature.geometry = arcToLineString(record.geometry, 25);
 					}
 
 					var olFeature = olGeoJsonFormat.read(nenFeature, 'Feature');
