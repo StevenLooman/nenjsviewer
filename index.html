@@ -25,44 +25,54 @@
 		<script type="text/javascript" src="js/nen1878reader-0.6.1.js"></script>
 
 		<!-- Style map, styles taken from the GBKN handboek 2.1 -->
-		<script id="gbkn_style" type="text/json">
+		<script id="gbkn_layers" type="text/json">
 			{
-				"B01": { "strokeColor": "#ff0000" },
-				"B02": { "strokeColor": "#ff0000" },
-				"B07": { "strokeColor": "#ff0000" },
-				"B11": { "strokeColor": "#ff0000" },
-				"B14": { "strokeColor": "#ff0000" },
-				"B17": { "strokeColor": "#ff0000"," strokeDashstyle": "point" },
-				"B20": { "strokeColor": "#ff0000", "strokeDashstyle": "point" },
+				"base": [ "", { } ],
 
-				"B03": { "strokeColor": "#ff0000" },
-				"B04": { "strokeColor": "#ff0000" },
-
-				"V00": { "strokeColor": "#000000" },
-				"V06": { "strokeColor": "#000000" },
-
-				"Q07": { "strokeColor": "#0000ff" },
-				"Q06": { "strokeColor": "#0000ff" },
-				"W00": { "strokeColor": "#0000ff" },
-				"T09": { "strokeColor": "#0000ff" },
-				"T07": { "strokeColor": "#0000ff" },
-
-				"T00": { "strokeColor": "#000000" },
-				"T01": { "strokeColor": "#000000" },
-				"T13": { "strokeColor": "#000000" },
-				"T22": { "strokeColor": "#000000" },
-				"Q01": { "strokeColor": "#000000" },
-				"Q10": { "strokeColor": "#000000" },
-				"L01": { "strokeColor": "#000000" },
-
-				"Z06": { "fontColor": "#000000", "fontFamily": "Arial", "label": "${text}" },
-				"Z02": { "fontColor": "#000000", "fontFamily": "Arial", "label": "${text}" },
-
-				"Z07": { "fontColor": "#0000ff", "fontFamily": "Arial", "label": "${text}" },
-
-				"Z09": { "fontColor": "#000000", "fontFamily": "Arial", "label": "${text}" },
-				"Z05": { "fontColor": "#000000", "fontFamily": "Arial", "label": "${text}" },
-				"Z19": { "fontColor": "#000000", "fontFamily": "Arial", "label": "${text}" }
+				"B01": [ "B01: Gevel hoofdgebouw", { "strokeColor": "#ff0000" } ],
+				"B02": [ "B02: Gevel bijgebouw", { "strokeColor": "#ff0000" } ],
+				"B03": [ "B03: Begrenzing overig bouwwerk", { "strokeColor": "#ff0000" } ],
+				"B04": [ "B04: Begrenzing kunstwerk", { "strokeColor": "#ff0000" } ],
+				"B07": [ "B07: Scheidingsmuur", { "strokeColor": "#ff0000" } ],
+				"B11": [ "B11: Dakrand hoofdgebouw", { "strokeColor": "#ff0000" } ],
+				"B14": [ "B14: Dakrand bijgebouw", { "strokeColor": "#ff0000" } ],
+				"B17": [ "B17: Begrenzing overbouw", { "strokeColor": "#ff0000"," strokeDashstyle": "point" } ],
+				"B20": [ "B20: Begrenzing onderbouw", { "strokeColor": "#ff0000", "strokeDashstyle": "point" } ],
+				"L01": [ "L01: Hoogspanningsmast", { "strokeColor": "#000000" } ],
+				"Q01": [ "Q01: Spoorrail", { "strokeColor": "#000000" } ],
+				"Q02": [ "Q02", [ ] ],
+				"Q06": [ "Q06: Walbescherming, beschoeiing", { "strokeColor": "#0000ff" } ],
+				"Q07": [ "Q07: Kademuur", { "strokeColor": "#0000ff" } ],
+				"Q08": [ "Q08", [ ] ],
+				"Q10": [ "Q10: Kant stijger", { "strokeColor": "#000000" } ],
+				"Q19": [ "Q19", [ ] ],
+				"T00": [ "T00: Terreinscheiding", { "strokeColor": "#000000" } ],
+				"T01": [ "T01: Kant muur", { "strokeColor": "#000000" } ],
+				"T02": [ "T02", [ ] ],
+				"T03": [ "T03", [ ] ],
+				"T04": [ "T04", [ ] ],
+				"T05": [ "T05", [ ] ],
+				"T07": [ "T07: Midden sloot / greppel", { "strokeColor": "#0000ff" } ],
+				"T09": [ "T09: Kant insteek", { "strokeColor": "#0000ff" } ],
+				"T13": [ "T13: Taludlijn", { "strokeColor": "#000000" } ],
+				"T20": [ "T20", [ ] ],
+				"T22": [ "T22: Sluitlijn", { "strokeColor": "#000000" } ],
+				"V00": [ "V00: Kant verharding", { "strokeColor": "#000000" } ],
+				"V06": [ "V06: Kant onverhard", { "strokeColor": "#000000" } ],
+				"S01": [ "S01", { } ],
+				"S02": [ "S02", { } ],
+				"S05": [ "S05", { } ],
+				"S04": [ "S04", { } ],
+				"W00": [ "W00: Kant water", { "strokeColor": "#0000ff" } ],
+				"W01": [ "W01", [ ] ],
+				"W03": [ "W03", [ ] ],
+				"W04": [ "W04", [ ] ],
+				"Z02": [ "Z02: Huisnummer, huisletter, huisnummertoevoeging", { "fontColor": "#000000", "fontFamily": "Arial", "label": "${text}" } ],
+				"Z05": [ "Z05: Cultuur- en gebruiksaanduiding", { "fontColor": "#000000", "fontFamily": "Arial", "label": "${text}" } ],
+				"Z06": [ "Z06: Naamgeving openbare ruimte", { "fontColor": "#000000", "fontFamily": "Arial", "label": "${text}" } ],
+				"Z07": [ "Z07: Waterloopnaam", { "fontColor": "#0000ff", "fontFamily": "Arial", "label": "${text}" } ],
+				"Z09": [ "Z09: Functieaanduiding", { "fontColor": "#000000", "fontFamily": "Arial", "label": "${text}" } ],
+				"Z19": [ "Z19: Overige tekst", { "fontColor": "#000000", "fontFamily": "Arial", "label": "${text}" } ]
 			}
 		</script>
 
@@ -122,6 +132,7 @@
 
 				// add base layer
 				var baseLayer = getLayer('base');
+				baseLayer.displayInLayerSwitcher = false;
 				olMap.addLayer(baseLayer);
 				olMap.setBaseLayer(baseLayer);
 
@@ -129,28 +140,29 @@
 				olMap.setCenter(olCenter, olZoom);
 			}
 
-			var nenStyles = JSON.parse($('#gbkn_style').text());
-			var nenVisibilities = JSON.parse($('#visibility_rules').text());
+			var gbknLayers = JSON.parse($('#gbkn_layers').text());
+			var gbknVisibilities = JSON.parse($('#visibility_rules').text());
 			function getLayer(lkiCode) {
-				if (lkiCode && !(lkiCode in olLayers)) {
+				if (!(lkiCode in olLayers)) {
 					// visibility rules
 					var rules = [];
-					if (nenVisibilities[lkiCode]) {
-						for (var i = 0; i < nenVisibilities[lkiCode].length; ++i) {
-							var definition = nenVisibilities[lkiCode][i];
+					if (gbknVisibilities[lkiCode]) {
+						for (var i = 0; i < gbknVisibilities[lkiCode].length; ++i) {
+							var definition = gbknVisibilities[lkiCode][i];
 							var rule = new OpenLayers.Rule(definition);
 							rules.push(rule);
 						}
 					}
 
 					// style for layer
-					var nenStyle = nenStyles[lkiCode];
-					var style = new OpenLayers.Style(nenStyle, {
+					var gbknStyle = gbknLayers[lkiCode][1];
+					var style = new OpenLayers.Style(gbknStyle, {
 						rules: rules
 					});
 
 					// create layer
-					var layer = new OpenLayers.Layer.Vector(lkiCode, {
+					var layerName = gbknLayers[lkiCode][0];
+					var layer = new OpenLayers.Layer.Vector(layerName, {
 						styleMap: new OpenLayers.StyleMap(style)
 					});
 					olMap.addLayer(layer);
@@ -162,8 +174,6 @@
 			}
 
 			function onReadingFinished() {
-				console.log('onReadingFinished');
-
 				var layers = [];
 				for (var layerName in olLayers) {
 					var layer = getLayer(layerName);
@@ -175,22 +185,6 @@
 						}
 					});
 				}
-				console.log('layers', layers);
-
-				var selectControl = new OpenLayers.Control.SelectFeature(
-					layers,
-					{
-						clickout: true,
-						toggle: false,
-						multiple: false,
-						hover: false,
-						toggleKey: "ctrlKey",
-						multipleKey: "shiftKey"
-					}
-				);
-
-				olMap.addControl(selectControl);
-				selectControl.activate();
 			}
 
 			// NEN/GBKN thingies
