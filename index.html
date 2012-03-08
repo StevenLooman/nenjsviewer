@@ -83,6 +83,12 @@
 				"Z02": [ { "maxScaleDenominator": 1000 } ]
 			}
 		</script>
+
+		<style>
+			#selected_feature {
+				margin: 10px 50px;
+			}
+		</style>
 	</head>
 
 	<body>
@@ -93,6 +99,10 @@
 			</div>
 
 			<div data-role="content">
+				<div id="selected_feature">
+					&nbsp;
+				</div>
+
 				<div id="map">
 				</div>
 			</div>
@@ -181,10 +191,16 @@
 
 					layer.events.on({
 						'featureselected': function(e) {
-							console.log('selected feature', e.feature.attributes);
+							var attributes = e.feature.attributes
+							var str = 'Type: ' + attributes.lkiCode + ', Bron: ' + attributes.source;
+							$('#selected_feature').html(str);
 						}
 					});
 				}
+
+				var selectControl = new OpenLayers.Control.SelectFeature(layers);
+				olMap.addControl(selectControl);
+				selectControl.activate();
 			}
 
 			// NEN/GBKN thingies
