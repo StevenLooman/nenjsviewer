@@ -94,11 +94,11 @@
 	<body>
 		<div data-role="page" id="mappage">
 			<div data-role="header">
-				<h4>Demo: GBKN data of Weesp</h4>
-				<!-- XXX: TODO: ram solutions logo -->
+				<a href="#about" data-icon="about" data-role="button" data-rel="dialog" data-transition="pop">About</a>
+				<h1>Demo: GBKN data of Weesp</h1>
 			</div>
 
-			<div data-role="content">
+			<div data-role="content" style="height: 89%">
 				<div id="selected_feature">
 					&nbsp;
 				</div>
@@ -108,7 +108,9 @@
 			</div>
 
 			<div data-role="footer">
-				<a href="#about" data-icon="about" data-role="button" data-rel="dialog" data-transition="pop">About</a>
+				<div align="right">
+					<a href="http://www.ram-solutions.nl" target="_blank"><img src="img/logo_small.png" /></a>
+				</div>
 			</div>
 		</div>
 
@@ -119,6 +121,23 @@
 			</div>
 
 			<div data-role="content">
+				<p>
+					This page shows the power of OpenLayers and JavaScript. The features shown on the map are read from a GBKN-file in the NEN1878 format. The JavaScript behind this page parses the NEN1878 data just like your normal GBKN data-imported in your GIS program would do. The GBKN-features are then added to the map with the styling specified by the "GBKN handboek", i.e., the prescribed styling of the data.
+				</p>
+
+				<p>
+					GBKN is one of the Dutch topography sources often used a base data for GIS applications. Click on any of the features to see more data about them.
+				</p>
+
+				<p>
+					This demo was made as a proof of concept by Steven Looman - <a href="http://www.ram-solutions.nl" target="_blank">Ram Solutions</a>. Feel free to contact me with your questions or other opportunities.
+				</p>
+
+				<p>
+					<div align="center">
+						<a href="http://www.ram-solutions.nl" target="_blank"><img src="img/logo_medium.png" /></a>
+					</span>
+				</p>
 			</div>
 		</div>
 
@@ -197,6 +216,24 @@
 						}
 					});
 				}
+
+				/*
+				var highlightCtrl = new OpenLayers.Control.SelectFeature(
+					layers,
+					{
+						hover: true,
+						highlightOnly: true,
+						renderIntent: "temporary",
+						eventListeners: {
+							featurehighlighted: function(e) {
+								console.log('featurehighlighted', e);
+							}
+						}
+					}
+				);
+				olMap.addControl(highlightCtrl);
+				highlightCtrl.activate();
+				*/
 
 				var selectControl = new OpenLayers.Control.SelectFeature(layers);
 				olMap.addControl(selectControl);
