@@ -21,7 +21,7 @@
 		<script type="text/javascript" src="http://openlayers.org/api/2.11/OpenLayers.js"></script>
 
 		<!-- NEN and geometry related -->
-		<script type="text/javascript" src="js/straightcurve-0.0.2.js"></script>
+		<script type="text/javascript" src="js/straightcurve-0.0.3.js"></script>
 		<script type="text/javascript" src="js/nen1878reader-0.6.1.js"></script>
 
 		<!-- Style map, styles taken from the GBKN handboek 2.1 -->
@@ -117,7 +117,6 @@
 		<div data-role="page" id="about">
 			<div data-role="header">
 				<h4>Demo: GBKN data of Weesp</h4>
-				<!-- XXX: TODO: ram solutions logo -->
 			</div>
 
 			<div data-role="content">
@@ -245,13 +244,14 @@
 				var olGeoJsonFormat = new OpenLayers.Format.GeoJSON();
 
 				function arcToLineString(arc, segmentCount) {
-					// convert an arc to a line string
 					var points = [
 						new straightcurve.Vertex2(arc.coordinates[0].x, arc.coordinates[0].y),
 						new straightcurve.Vertex2(arc.coordinates[1].x, arc.coordinates[1].y),
 						new straightcurve.Vertex2(arc.coordinates[2].x, arc.coordinates[2].y),
 					];
 					var arc = new straightcurve.Arc2(points[0], points[1], points[2]);
+
+					// construct new GeoJSON LineString geometry
 					var lines = arc.segmentize(segmentCount);
 					var geometry = {
 						type: 'LineString',
@@ -265,17 +265,31 @@
 					return geometry;
 				}
 
-				function onNenRecord(record) {
-					var nenFeature = nen1878reader.GeoJson.toFeature(record);
+				function deriveOrientation(basePoint, directionPoint) {
+					var baseLine = new straightcurve.Line2(new straightcurve.Vertex2(basePoint.x, basePoint.y), new straightcurve.Vertex2(basePoint.x + 1000, basePoint.y));
+					var directionLine = new straightcurve.Line2(new straightcurve.Vertex2(basePoint.x, basePoint.y), new straightcurve.Vertex2(directionPoint.x, directionPoint.y));
 
+					return baseLine.signedAngle(directionLine);
+				}
+
+				function onNenRecord(record) {
 					// only add records of type 3 or 5
 					if (record.recordType != 3 && record.recordType != 5) {
 						return;
 					}
 
-					// 
+					var nenFeature = nen1878reader.GeoJson.toFeature(record);
+
+					// convert arc to line strings
 					if (record.geometryType == 13) {
 						nenFeature.geometry = arcToLineString(record.geometry, 25);
+					}
+
+					// in case of label/symbol, get orientaiton from record and set it in feature
+					if (record.recordType == 5) {
+						var orientation = deriveOrientation(record.geometry.coordinates[0], record.geometry.coordinates[1]);
+						//console.log(orientation);
+						nenFeature.properties.rotation = orientation / Math.PI * 180;
 					}
 
 					var olFeature = olGeoJsonFormat.read(nenFeature, 'Feature');
