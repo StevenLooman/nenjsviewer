@@ -59,8 +59,8 @@
 				"T22": [ "T22: Sluitlijn",                                    { "strokeColor": "#000000" } ],
 				"V00": [ "V00: Kant verharding",                              { "strokeColor": "#000000" } ],
 				"V06": [ "V06: Kant onverhard",                               { "strokeColor": "#000000" } ],
-				"S01": [ "S01",                                               { "externalGraphic": "img/S01.png", "graphicHeight": "20", "rotation": "${rotation}" } ],
-				"S02": [ "S02",                                               { "externalGraphic": "img/S02.png", "graphicHeight": "20", "rotation": "${rotation}" } ],
+				"S01": [ "S01",                                               { "externalGraphic": "img/S01-${symbolType}.png", "graphicHeight": "20", "rotation": "${rotation}" } ],
+				"S02": [ "S02",                                               { "externalGraphic": "img/S02-${symbolType}.png", "graphicHeight": "20", "rotation": "${rotation}" } ],
 				"S04": [ "S04",                                               { "externalGraphic": "img/S04.png", "graphicHeight": "20", "rotation": "${rotation}" } ],
 				"S05": [ "S05",                                               { "externalGraphic": "img/S05.png", "graphicHeight": "20", "rotation": "${rotation}" } ],
 				"W00": [ "W00: Kant water",                                   { "strokeColor": "#0000ff" } ],
@@ -68,11 +68,11 @@
 				"W03": [ "W03",                                               { "strokeColor": "#ee9900" } ],
 				"W04": [ "W04",                                               { "strokeColor": "#ee9900" } ],
 				"Z02": [ "Z02: Huisnummer, huisletter, huisnummertoevoeging", { "fontColor": "#000000", "fontFamily": "Arial", "labelAlign": "lb", "labelSelect": true, "label": "${text}", "rotation": "${rotation}" } ],
-				"Z05": [ "Z05: Cultuur- en gebruiksaanduiding",               { "fontColor": "#000000", "fontFamily": "Arial", "labelAlign": "lb", "labelSelect": true, "label": "${text}" } ],
-				"Z06": [ "Z06: Naamgeving openbare ruimte",                   { "fontColor": "#000000", "fontFamily": "Arial", "labelAlign": "lb", "labelSelect": true, "label": "${text}" } ],
-				"Z07": [ "Z07: Waterloopnaam",                                { "fontColor": "#0000ff", "fontFamily": "Arial", "labelAlign": "lb", "labelSelect": true, "label": "${text}" } ],
-				"Z09": [ "Z09: Functieaanduiding",                            { "fontColor": "#000000", "fontFamily": "Arial", "labelAlign": "lb", "labelSelect": true, "label": "${text}" } ],
-				"Z19": [ "Z19: Overige tekst",                                { "fontColor": "#000000", "fontFamily": "Arial", "labelAlign": "lb", "labelSelect": true, "label": "${text}" } ]
+				"Z05": [ "Z05: Cultuur- en gebruiksaanduiding",               { "fontColor": "#000000", "fontFamily": "Arial", "labelAlign": "lb", "labelSelect": true, "label": "${text}", "rotation": "${rotation}" } ],
+				"Z06": [ "Z06: Naamgeving openbare ruimte",                   { "fontColor": "#000000", "fontFamily": "Arial", "labelAlign": "lb", "labelSelect": true, "label": "${text}", "rotation": "${rotation}" } ],
+				"Z07": [ "Z07: Waterloopnaam",                                { "fontColor": "#0000ff", "fontFamily": "Arial", "labelAlign": "lb", "labelSelect": true, "label": "${text}", "rotation": "${rotation}" } ],
+				"Z09": [ "Z09: Functieaanduiding",                            { "fontColor": "#000000", "fontFamily": "Arial", "labelAlign": "lb", "labelSelect": true, "label": "${text}", "rotation": "${rotation}" } ],
+				"Z19": [ "Z19: Overige tekst",                                { "fontColor": "#000000", "fontFamily": "Arial", "labelAlign": "lb", "labelSelect": true, "label": "${text}", "rotation": "${rotation}" } ]
 			}
 		</script>
 
@@ -214,7 +214,10 @@
 					layer.events.on({
 						'featureselected': function(e) {
 							var attributes = e.feature.attributes
-							var str = 'Type: ' + attributes.lkiCode + ', Bron: ' + attributes.source;
+							var str = 'Type: ' + attributes.lkiCode;
+							if (attributes.source) {
+								str += ', Bron: ' + attributes.source;
+							}
 							$('#selected_feature').html(str);
 						}
 					});
@@ -292,13 +295,14 @@
 					// in case of label/symbol, get orientaiton from record and set it in feature
 					if (record.recordType == 5) {
 						var orientation = deriveOrientation(record.geometry.coordinates[0], record.geometry.coordinates[1]);
-						//console.log(orientation);
-						nenFeature.properties.rotation = orientation / Math.PI * 180;
-						nenFeature.rotation = orientation / Math.PI * 180;
+						nenFeature.properties.rotation = nenFeature.rotation = orientation / Math.PI * 180;
+						if (nenFeature.properties.symbolType) {
+							nenFeature.properties.symbolType = nenFeature.properties.symbolType.trim();
+						}
 					}
 
 					var olFeature = olGeoJsonFormat.read(nenFeature, 'Feature');
-					var layer = getLayer(record.lkiCode);
+					var layer = getLayer(nenFeature.properties.lkiCode);
 
 					layer.addFeatures(olFeature);
 				}
