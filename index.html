@@ -225,7 +225,10 @@
 								str += ', Sub type: ' + attributes.symbolType.trim();
 							}
 							if (attributes.source) {
-								str += ', Bron: ' + attributes.source;
+								str += ', Source: ' + attributes.source;
+							}
+							if (attributes.date) {
+								str += ', Date: ' + attributes.date.getFullYear() + '/' + (attributes.date.getMonth() + 1) + '/' + attributes.date.getDate();
 							}
 							$('#selected_feature').html(str);
 						}
