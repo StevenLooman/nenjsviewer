@@ -221,6 +221,9 @@
 						'featureselected': function(e) {
 							var attributes = e.feature.attributes
 							var str = 'Type: ' + attributes.lkiCode;
+							if (attributes.symbolType) {
+								str += ', Sub type: ' + attributes.symbolType.trim();
+							}
 							if (attributes.source) {
 								str += ', Bron: ' + attributes.source;
 							}
