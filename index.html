@@ -150,6 +150,9 @@
 			var olCenter = new OpenLayers.LonLat(131006460, 480027748);
 			var olZoom = 3;
 
+			var gbknLayers = JSON.parse($('#gbkn_layers').text());
+			var gbknVisibilities = JSON.parse($('#visibility_rules').text());
+
 			// OpenLayers thingies
 			function setupMap() {
 				olMap = new OpenLayers.Map('map', {
@@ -168,12 +171,15 @@
 				olMap.addLayer(baseLayer);
 				olMap.setBaseLayer(baseLayer);
 
+				// add all layers, this gives the right order
+				for (var lkiCode in gbknLayers) {
+					getLayer(lkiCode);
+				}
+
 				// center
 				olMap.setCenter(olCenter, olZoom);
 			}
 
-			var gbknLayers = JSON.parse($('#gbkn_layers').text());
-			var gbknVisibilities = JSON.parse($('#visibility_rules').text());
 			function getLayer(lkiCode) {
 				if (!(lkiCode in olLayers)) {
 					// visibility rules
