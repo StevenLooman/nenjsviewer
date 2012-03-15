@@ -323,7 +323,7 @@
 					// in case of label/symbol, get orientaiton from record and set it in feature
 					if (record.recordType == 5) {
 						var orientation = deriveOrientation(record.geometry.coordinates[0], record.geometry.coordinates[1]);
-						nenFeature.properties.rotation = nenFeature.rotation = orientation / Math.PI * 180;
+						nenFeature.properties.rotation = -orientation / Math.PI * 180;
 						if (nenFeature.properties.symbolType) {
 							nenFeature.properties.symbolType = nenFeature.properties.symbolType.trim();
 						}
