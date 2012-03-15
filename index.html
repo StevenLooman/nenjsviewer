@@ -256,6 +256,9 @@
 				var selectControl = new OpenLayers.Control.SelectFeature(layers);
 				olMap.addControl(selectControl);
 				selectControl.activate();
+
+
+				$.mobile.hidePageLoadingMsg();
 			}
 
 			// NEN/GBKN thingies
@@ -320,19 +323,28 @@
 				}
 
 				function onAjaxSuccess(data, textStatus, jqXHR) {
+					$.mobile.hidePageLoadingMsg();
+
 					var parser = new nen1878reader.Nen1878Parser();
 					var reader = new nen1878reader.Nen1878StringReader(parser, data);
 
 					parser.on('record', onNenRecord);
 					reader.on('end', onReadingFinished);
 
+					$.mobile.showPageLoadingMsg('a', 'Transforming data to OpenLayers format');
 					reader.start();
 				}
 
 				function onAjaxError(jqXHR, textStatus, errorThrown) {
+					$.mobile.hidePageLoadingMsg();
+
 					console.log('ajax error');
 					console.log(textStatus);
 				}
+
+
+				// show loading screen
+				$.mobile.showPageLoadingMsg('a', 'Downloading GBKN data');
 
 				$.ajax({
 					url: 'data/WEESP_N__7001.NEN',
