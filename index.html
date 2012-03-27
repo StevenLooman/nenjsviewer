@@ -99,7 +99,16 @@
 
 		<style>
 			#selected_feature {
-				margin: 10px 50px;
+				position: absolute;
+				top: 45px;
+				left: 55px;
+
+				background-color: #ABC;
+				z-index: 1000;
+
+				padding: 5px 10px;
+
+				border: 3px solid black;
 			}
 		</style>
 	</head>
@@ -170,15 +179,11 @@
 				var header = $('div[data-role="header"]:visible');
 				var footer = $('div[data-role="footer"]:visible');
 				var content = $('div[data-role="content"]:visible:visible');
-				var selectedFeature = $('div[id="selected_feature"]');
 				var map = $('div[id="map"]');
 
 				var windowHeight = $(window).height();
 				var contentHeight = windowHeight - header.outerHeight() - footer.outerHeight();
 				content.height(contentHeight);
-
-				var mapHeight = contentHeight - (selectedFeature.outerHeight() + 2 * 10); // margin
-				map.height(mapHeight);
 
 				if (window.map && window.map instanceof OpenLayers.Map) {
 					map.updateSize();
