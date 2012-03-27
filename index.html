@@ -111,7 +111,7 @@
 				<h1>Demo: GBKN data of Weesp</h1>
 			</div>
 
-			<div data-role="content" style="height: 89%">
+			<div data-role="content">
 				<div id="selected_feature">
 					&nbsp;
 				</div>
@@ -165,6 +165,26 @@
 
 			var gbknLayers = JSON.parse($('#gbkn_layers').text());
 			var gbknVisibilities = JSON.parse($('#visibility_rules').text());
+
+			function fixMapSize() {
+				var header = $('div[data-role="header"]:visible');
+				var footer = $('div[data-role="footer"]:visible');
+				var content = $('div[data-role="content"]:visible:visible');
+				var selectedFeature = $('div[id="selected_feature"]');
+				var map = $('div[id="map"]');
+
+				var windowHeight = $(window).height();
+				var contentHeight = windowHeight - header.outerHeight() - footer.outerHeight();
+				content.height(contentHeight);
+
+				var mapHeight = contentHeight - (selectedFeature.outerHeight() + 2 * 10); // margin
+				map.height(mapHeight);
+
+				if (window.map && window.map instanceof OpenLayers.Map) {
+					map.updateSize();
+				}
+			}
+			$(window).bind("orientationchange resize pageshow", fixMapSize);
 
 			// OpenLayers thingies
 			function setupMap() {
